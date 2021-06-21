@@ -1,7 +1,8 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
 import { toast } from 'react-toastify';
-import { api } from '../services/api';
 import { addProductToCart } from './addProduct'
+import { removeProductFromCart } from './removeProduct'
+import { updateProductInCart } from './updateProduct'
 import { Product, Stock } from '../types';
 
 interface CartProviderProps {
@@ -43,9 +44,9 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
 
   const removeProduct = (productId: number) => {
     try {
-      // TODO
+      removeProductFromCart({productId, cart, setCart})
     } catch {
-      // TODO
+      toast.error('Erro na remoção do produto')
     }
   };
 
@@ -54,9 +55,9 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     amount,
   }: UpdateProductAmount) => {
     try {
-      // TODO
+      updateProductInCart({productId, amount, cart, setCart})
     } catch {
-      // TODO
+      toast.error('Erro na alteração de quantidade do produto');
     }
   };
 

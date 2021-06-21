@@ -1,6 +1,7 @@
 import { api } from '../services/api'
 import { Product } from '../types'
 import { toast } from 'react-toastify'
+import { changeAmountOfProductWithId, getProductStockAmount } from './commonCartFunctions'
 
 interface addProductProps {
     productId: number
@@ -14,6 +15,7 @@ export async function addProductToCart({productId, cart, setCart}: addProductPro
     } else {
         await addNewProductInCart({productId, cart, setCart})
     }
+    localStorage.setItem('@RocketShoes:cart', JSON.stringify(cart))
 }
 
 function isProductInCart(cart: Product[], productId: number) {
@@ -27,29 +29,21 @@ function incrementProductAmount({productId, cart, setCart}: addProductProps) {
     setCart(cart.map(product => incrementAmountIfIsInStock(product, productId)))
 }
 
-function incrementAmountIfIsInStock(product: Product, productToAddId: number){
-    if (isProductInStock(product, productToAddId)){
-        product = incrementAmountOfProductWithId(product, productToAddId)
+function incrementAmountIfIsInStock(product: Product, productId: number){
+    if (isProductInStock(product, productId)){
+        product = changeAmountOfProductWithId({product, productId, amount: 1})
     }
     return product
 }
 
 async function isProductInStock(product: Product, productId: number) {
-    let amounInStock = await api.get<Product>(`/stock/${productId}`)
-                                .then(response => response.data.amount)
-    if (amounInStock < product.amount){
+    let amountInStock = await getProductStockAmount(productId)
+    if (product.amount < amountInStock){
         return true
     } else {
-        toast.error('Quantidade solicitada fora de estoque');
+        toast.error('Quantidade solicitada fora de estoque')
         return false
     }
-}
-
-function incrementAmountOfProductWithId(product: Product, addedProductId: number) {
-    if (product.id === addedProductId){
-        product.amount += 1
-    }
-    return product
 }
 
 async function addNewProductInCart({productId, cart, setCart}: addProductProps) {
