@@ -7,7 +7,7 @@ interface removeProductProps {
     setCart: (cart: Product[]) => void
 }
 
-export async function removeProductFromCart({productId, cart, setCart}: removeProductProps) {
+export function removeProductFromCart({productId, cart, setCart}: removeProductProps) {
     setCart(cart
         .map(product => changeAmountOfProductWithId({product, productId, amount: -1}))
         .filter(product => product.amount >= 1))
