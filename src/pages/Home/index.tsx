@@ -30,10 +30,17 @@ const Home = (): JSX.Element => {
     return sumAmount
   }, {} as CartItemsAmount)
 
+  function addFormattedPrice(product: ProductFormatted){
+    product.priceFormatted = formatPrice(product.price)
+    return product
+  }
+
   useEffect(() => {
     async function loadProducts() {
-      api.get('/products')
-         .then(response => setProducts(response.data))
+      api.get<ProductFormatted[]>('/products')
+         .then(response => response.data)
+         .then(response => response.map(product => addFormattedPrice(product)))
+         .then(response => setProducts(response))
     }
 
     loadProducts();
@@ -50,15 +57,15 @@ const Home = (): JSX.Element => {
             <li>
               <img src={product.image} alt="Tênis de Caminhada Leve Confortável" />
               <strong>{product.title}</strong>
-              <span>{formatPrice(product.price)}</span>
+              <span>{product.priceFormatted}</span>
               <button
                 type="button"
                 data-testid="add-product-button"
-              // onClick={() => handleAddProduct(product.id)}
+                onClick={() => handleAddProduct(product.id)}
               >
                 <div data-testid="cart-product-quantity">
                   <MdAddShoppingCart size={16} color="#FFF" />
-                  {/* {cartItemsAmount[product.id] || 0} */} 2
+                  {cartItemsAmount[product.id] || 0}
                 </div>
 
                 <span>ADICIONAR AO CARRINHO</span>
