@@ -15,7 +15,6 @@ export async function addProductToCart({productId, cart, setCart}: addProductPro
     } else {
         await addNewProductInCart({productId, cart, setCart})
     }
-    localStorage.setItem('@RocketShoes:cart', JSON.stringify(cart))
 }
 
 function isProductInCart(cart: Product[], productId: number) {

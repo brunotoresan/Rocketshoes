@@ -35,6 +35,10 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     return [];
   });
 
+  useEffect(() => {
+    localStorage.setItem('@RocketShoes:cart', JSON.stringify(cart))
+  }, [cart])
+
   const addProduct = async (productId: number) => {
     try {
       await addProductToCart({productId, cart, setCart})
