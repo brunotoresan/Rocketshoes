@@ -1,9 +1,10 @@
-import { createContext, ReactNode, useContext, useState } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { addProductToCart } from './addProduct'
 import { removeProductFromCart } from './removeProduct'
 import { updateProductInCart } from './updateProduct'
 import { Product, Stock } from '../types';
+import { api } from '../services/api'
 
 interface CartProviderProps {
   children: ReactNode;
@@ -36,7 +37,7 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
 
   const addProduct = async (productId: number) => {
     try {
-      addProductToCart({productId, cart, setCart})
+      await addProductToCart({productId, cart, setCart})
     } catch {
       toast.error('Erro na adição do produto');
     }

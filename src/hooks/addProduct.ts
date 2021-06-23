@@ -47,8 +47,10 @@ async function isProductInStock(product: Product, productId: number) {
 }
 
 async function addNewProductInCart({productId, cart, setCart}: addProductProps) {
-    await api.get<Product>(`/products/${productId}`)
-             .then(response => {response.data.amount=1
-                                return response.data})
-             .then(response => {setCart([...cart, response])})
+    const product = await api.get<Product>(`/products/${productId}`)
+    const newProduct = {
+        ...product.data,
+        amount: 1
+    }
+    setCart([...cart, newProduct])
 }

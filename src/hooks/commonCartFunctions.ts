@@ -20,7 +20,7 @@ export function changeAmountOfProduct(product: Product, newAmount: number) {
 }
 
 export async function getProductStockAmount(productId: number){
-    let amountInStock = await api.get<Product>(`/stock/${productId}`)
-                                 .then(response => response.data.amount)
+    const amountInStock = await api.get<Product>(`/stock/${productId}`)
+                                   .then(response => response.data.amount)
     return amountInStock
 }
