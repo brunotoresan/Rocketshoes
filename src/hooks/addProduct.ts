@@ -11,7 +11,7 @@ interface addProductProps {
 
 export async function addProductToCart({productId, cart, setCart}: addProductProps) {
     if (isProductInCart(cart, productId)){
-        incrementProductAmount({productId, cart, setCart})
+        await incrementProductAmount({productId, cart, setCart})
     } else {
         await addNewProductInCart({productId, cart, setCart})
     }
@@ -24,19 +24,22 @@ function isProductInCart(cart: Product[], productId: number) {
     return false
 }
 
-function incrementProductAmount({productId, cart, setCart}: addProductProps) {
-    setCart(cart.map(product => incrementAmountIfIsInStock(product, productId)))
+async function incrementProductAmount({productId, cart, setCart}: addProductProps) {
+    const updatedCart = await Promise.all(
+        cart.map(product => incrementAmountIfIsInStock(product, productId))
+    )
+    setCart(updatedCart)
 }
 
-function incrementAmountIfIsInStock(product: Product, productId: number){
-    if (isProductInStock(product, productId)){
+async function incrementAmountIfIsInStock(product: Product, productId: number){
+    if (await isProductInStock(product, productId)){
         product = incrementAmountOfProductWithId(product, productId)
     }
     return product
 }
 
 async function isProductInStock(product: Product, productId: number) {
-    let amountInStock = await getProductStockAmount(productId)
+    const amountInStock = await getProductStockAmount(productId)
     if (product.amount < amountInStock){
         return true
     } else {
