@@ -1,10 +1,8 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { addProductToCart } from './addProduct'
-import { removeProductFromCart } from './removeProduct'
 import { updateProductInCart } from './updateProduct'
-import { Product, Stock } from '../types';
-import { api } from '../services/api'
+import { Product } from '../types';
 
 interface CartProviderProps {
   children: ReactNode;
@@ -25,7 +23,7 @@ interface CartContextData {
 const CartContext = createContext<CartContextData>({} as CartContextData);
 
 export function CartProvider({ children }: CartProviderProps): JSX.Element {
-  const [cart, setCart] = useState<Product[]>(() => {
+    const [cart, setCart] = useState<Product[]>(() => {
     const storagedCart = localStorage.getItem('@RocketShoes:cart')
 
     if (storagedCart) {
@@ -49,7 +47,7 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
 
   const removeProduct = (productId: number) => {
     try {
-      removeProductFromCart({productId, cart, setCart})
+      setCart(cart.filter(product => product.id != productId))
     } catch {
       toast.error('Erro na remoção do produto')
     }
@@ -60,7 +58,7 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     amount,
   }: UpdateProductAmount) => {
     try {
-      updateProductInCart({productId, amount, cart, setCart})
+      await updateProductInCart({productId, amountChange: amount, cart, setCart})
     } catch {
       toast.error('Erro na alteração de quantidade do produto');
     }

@@ -1,7 +1,7 @@
 import { api } from '../services/api'
 import { Product } from '../types'
 import { toast } from 'react-toastify'
-import { changeAmountOfProductWithId, getProductStockAmount } from './commonCartFunctions'
+import { getProductStockAmount } from './commonCartFunctions'
 
 interface addProductProps {
     productId: number
@@ -30,7 +30,7 @@ function incrementProductAmount({productId, cart, setCart}: addProductProps) {
 
 function incrementAmountIfIsInStock(product: Product, productId: number){
     if (isProductInStock(product, productId)){
-        product = changeAmountOfProductWithId({product, productId, amount: 1})
+        product = incrementAmountOfProductWithId(product, productId)
     }
     return product
 }
@@ -43,6 +43,13 @@ async function isProductInStock(product: Product, productId: number) {
         toast.error('Quantidade solicitada fora de estoque')
         return false
     }
+}
+
+export function incrementAmountOfProductWithId(product: Product, productId: number) {
+    if (product.id === productId){
+        product.amount += 1
+    }
+    return product
 }
 
 async function addNewProductInCart({productId, cart, setCart}: addProductProps) {

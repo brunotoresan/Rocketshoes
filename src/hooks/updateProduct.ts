@@ -1,34 +1,36 @@
 import { Product } from '../types'
 import { toast } from 'react-toastify'
-import { changeAmountOfProduct, getProductStockAmount } from './commonCartFunctions'
+import { getProductStockAmount } from './commonCartFunctions'
 
 interface updateProductProps {
     productId: number
-    amount: number
+    amountChange: number
     cart: Product[]
     setCart: (cart: Product[]) => void
 }
 
-interface updateProductAmountProps {
-    newAmount: number
-    product: Product
-    cart: Product[]
-    setCart: (cart: Product[]) => void
+export async function updateProductInCart({productId, amountChange, cart, setCart}: updateProductProps){
+    const updatedCart = await Promise.all(
+        cart.map(product => updateAmountOfProductWithId(product, productId, amountChange))
+    )
+    setCart(updatedCart)
 }
 
-export async function updateProductInCart({productId, amount, cart, setCart}: updateProductProps){
-    let product = cart.find(product => product.id === productId)
-    if (product){
-        let newAmount = product.amount + amount
-        await updateProductAmountIfAvailable({newAmount, product, cart, setCart})
+async function updateAmountOfProductWithId(product: Product, productToUpdateId: number, amountChange: number){
+    if (product.id === productToUpdateId) {
+        const newProductAmount = await getUpdatedProductAmount(product, amountChange)
+        product.amount = newProductAmount
     }
+    return product
 }
 
-async function updateProductAmountIfAvailable({newAmount, product, cart, setCart}: updateProductAmountProps) {
-    let amountInStock = await getProductStockAmount(product.id)
-    if (newAmount <= amountInStock){
-        setCart(cart.map(product => changeAmountOfProduct(product, newAmount)))
+async function getUpdatedProductAmount(product: Product, amountChange: number) {
+    const amountInStock = await getProductStockAmount(product.id)
+    const newProductAmount = product.amount + amountChange
+    if (newProductAmount <= amountInStock){
+        return newProductAmount
     } else {
         toast.error('Quantidade solicitada fora de estoque')
+        return product.amount
     }
 }
