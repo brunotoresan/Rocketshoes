@@ -56,11 +56,12 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
   };
 
   const removeProduct = (productId: number) => {
-    try {
-      setCart(cart.filter(product => product.id !== productId))
-    } catch {
-      toast.error('Erro na remoção do produto')
-    }
+    const product = cart.find(product => product.id === productId)
+    if (product){
+        setCart(cart.filter(product => product.id !== productId))
+    } else {
+        toast.error('Erro na remoção do produto')
+    }    
   };
 
   const updateProductAmount = async ({

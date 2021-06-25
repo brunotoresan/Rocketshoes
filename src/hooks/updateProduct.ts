@@ -9,16 +9,12 @@ interface updateProductProps {
     setCart: (cart: Product[]) => void
 }
 
-export function updateProductInCart({productId, newAmount, cart, setCart}: updateProductProps){
-    const updatedCart = cart.map(product => updateAmountOfProductWithId(product, productId, newAmount))
-    setCart(updatedCart)
-}
-
-function updateAmountOfProductWithId(product: Product, productToUpdateId: number, newAmount: number){
-    if (product.id === productToUpdateId) {
-        product.amount = newAmount
+export async function updateProductAmountOrCatchError({productId, newAmount, cart, setCart}: updateProductProps) {
+    try {
+        await updateProductAmount({productId, newAmount, cart, setCart})
+    } catch {
+        toast.error('Erro na alteração de quantidade do produto');
     }
-    return product
 }
 
 async function updateProductAmount({productId, newAmount, cart, setCart}: updateProductProps) {
@@ -30,10 +26,14 @@ async function updateProductAmount({productId, newAmount, cart, setCart}: update
     }
 }
 
-export async function updateProductAmountOrCatchError({productId, newAmount, cart, setCart}: updateProductProps) {
-    try {
-        await updateProductAmount({productId, newAmount, cart, setCart})
-    } catch {
-        toast.error('Erro na alteração de quantidade do produto');
+function updateProductInCart({productId, newAmount, cart, setCart}: updateProductProps){
+    const updatedCart = cart.map(product => updateAmountOfProductWithId(product, productId, newAmount))
+    setCart(updatedCart)
+}
+
+function updateAmountOfProductWithId(product: Product, productToUpdateId: number, newAmount: number){
+    if (product.id === productToUpdateId) {
+        product.amount = newAmount
     }
+    return product
 }
