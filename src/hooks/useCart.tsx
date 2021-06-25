@@ -1,7 +1,8 @@
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useState, useRef } from 'react';
 import { toast } from 'react-toastify';
 import { addProductToCart } from './addProduct'
 import { updateProductInCart } from './updateProduct'
+import { getProductStockAmount } from './commonCartFunctions'
 import { Product } from '../types';
 
 interface CartProviderProps {
@@ -33,8 +34,18 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     return [];
   });
 
+  const isInitialRender = useRef(true);
+
+  function storeCartDataOnlyOnUpdate(cart: Product[]){
+    if (isInitialRender.current) {
+        isInitialRender.current = false;
+    } else {
+        localStorage.setItem('@RocketShoes:cart', JSON.stringify(cart))
+    }
+  }
+
   useEffect(() => {
-    localStorage.setItem('@RocketShoes:cart', JSON.stringify(cart))
+    storeCartDataOnlyOnUpdate(cart)
   }, [cart])
 
   const addProduct = async (productId: number) => {
@@ -53,12 +64,13 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     }
   };
 
-  const updateProductAmount = ({
+  const updateProductAmount = async ({
     productId,
     amount
   }: UpdateProductAmount) => {
     try {
-      updateProductInCart({productId, newAmount: amount, cart, setCart})
+      const amountInStock = await getProductStockAmount(productId)
+      updateProductInCart({productId, newAmount: amount, amountInStock, cart, setCart})
     } catch {
       toast.error('Erro na alteração de quantidade do produto');
     }
