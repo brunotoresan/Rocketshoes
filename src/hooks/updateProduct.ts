@@ -19,11 +19,15 @@ export async function updateProductAmountOrCatchError({productId, newAmount, car
 
 async function updateProductAmount({productId, newAmount, cart, setCart}: updateProductProps) {
     const amountInStock = await getProductStockAmount(productId)
-    if (newAmount <= amountInStock){
+    if (isValidAmount(newAmount, amountInStock)) {
         updateProductInCart({productId, newAmount, cart, setCart})
     } else {
         toast.error('Quantidade solicitada fora de estoque')
     }
+}
+
+function isValidAmount(newAmount: number, amountInStock: number){
+    return (newAmount <= amountInStock) && (newAmount > 0)
 }
 
 function updateProductInCart({productId, newAmount, cart, setCart}: updateProductProps){
