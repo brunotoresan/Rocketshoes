@@ -41,7 +41,7 @@ function isProductInStock(product: Product, amountInStock: number) {
 }
 
 function incrementProductAmount({productToAdd, cart, setCart}: incrementProductProps) {
-    const updatedCart = cart.map(product => incrementAmount(productToAdd, productToAdd.id))
+    const updatedCart = cart.map(product => incrementAmount(product, productToAdd.id))
     setCart(updatedCart)
 }
 
