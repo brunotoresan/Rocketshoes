@@ -4,33 +4,32 @@ import { getProductStockAmount } from './commonCartFunctions'
 
 interface updateProductProps {
     productId: number
-    amountChange: number
+    newAmount: number
     cart: Product[]
     setCart: (cart: Product[]) => void
 }
 
-export async function updateProductInCart({productId, amountChange, cart, setCart}: updateProductProps){
+export async function updateProductInCart({productId, newAmount, cart, setCart}: updateProductProps){
     const updatedCart = await Promise.all(
-        cart.map(product => updateAmountOfProductWithId(product, productId, amountChange))
+        cart.map(product => updateAmountOfProductWithId(product, productId, newAmount))
     )
     setCart(updatedCart)
 }
 
-async function updateAmountOfProductWithId(product: Product, productToUpdateId: number, amountChange: number){
+async function updateAmountOfProductWithId(product: Product, productToUpdateId: number, newAmount: number){
     if (product.id === productToUpdateId) {
-        const newProductAmount = await getUpdatedProductAmount(product, amountChange)
-        product.amount = newProductAmount
+        const productWithUpdatedAmount = await updateAmountIfIsAvailableInStock(product, newAmount)
+        return productWithUpdatedAmount
     }
     return product
 }
 
-async function getUpdatedProductAmount(product: Product, amountChange: number) {
+async function updateAmountIfIsAvailableInStock(product: Product, newAmount: number) {
     const amountInStock = await getProductStockAmount(product.id)
-    const newProductAmount = product.amount + amountChange
-    if (newProductAmount <= amountInStock){
-        return newProductAmount
+    if (newAmount <= amountInStock){
+        product.amount = newAmount
     } else {
         toast.error('Quantidade solicitada fora de estoque')
-        return product.amount
     }
+    return product
 }

@@ -5,12 +5,12 @@ import { updateProductInCart } from './updateProduct'
 import { Product } from '../types';
 
 interface CartProviderProps {
-  children: ReactNode;
+  children: ReactNode
 }
 
 interface UpdateProductAmount {
-  productId: number;
-  amount: number;
+  productId: number
+  amount: number
 }
 
 interface CartContextData {
@@ -47,18 +47,18 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
 
   const removeProduct = (productId: number) => {
     try {
-      setCart(cart.filter(product => product.id != productId))
+      setCart(cart.filter(product => product.id !== productId))
     } catch {
       toast.error('Erro na remoção do produto')
     }
   };
 
-  const updateProductAmount = async ({
+  const updateProductAmount = ({
     productId,
-    amount,
+    amount
   }: UpdateProductAmount) => {
     try {
-      await updateProductInCart({productId, amountChange: amount, cart, setCart})
+      updateProductInCart({productId, newAmount: amount, cart, setCart})
     } catch {
       toast.error('Erro na alteração de quantidade do produto');
     }
