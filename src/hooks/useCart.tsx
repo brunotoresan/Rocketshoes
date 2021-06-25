@@ -1,8 +1,7 @@
 import { createContext, ReactNode, useContext, useEffect, useState, useRef } from 'react';
 import { toast } from 'react-toastify';
 import { addProductToCart } from './addProduct'
-import { updateProductInCart } from './updateProduct'
-import { getProductStockAmount } from './commonCartFunctions'
+import { updateProductAmountOrCatchError } from './updateProduct'
 import { Product } from '../types';
 
 interface CartProviderProps {
@@ -68,12 +67,7 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     productId,
     amount
   }: UpdateProductAmount) => {
-    try {
-      const amountInStock = await getProductStockAmount(productId)
-      updateProductInCart({productId, newAmount: amount, amountInStock, cart, setCart})
-    } catch {
-      toast.error('Erro na alteração de quantidade do produto');
-    }
+    updateProductAmountOrCatchError({productId, newAmount: amount, cart, setCart})
   };
 
   return (
