@@ -9,37 +9,29 @@ interface addProductProps {
     setCart: (cart: Product[]) => void
 }
 
+interface incrementProductProps {
+    productToAdd: Product
+    cart: Product[]
+    setCart: (cart: Product[]) => void
+}
+
 export async function addProductToCart({productId, cart, setCart}: addProductProps) {
-    if (isProductInCart(cart, productId)){
-        await incrementProductAmount({productId, cart, setCart})
+    const product = cart.find(product => product.id === productId)
+    if (product){
+        await incrementAmountIfIsInStock({productToAdd: product as Product, cart, setCart})
     } else {
         await addNewProductInCart({productId, cart, setCart})
     }
 }
 
-function isProductInCart(cart: Product[], productId: number) {
-    if (cart.find(product => product.id === productId)){
-      return true
+async function incrementAmountIfIsInStock({productToAdd, cart, setCart}: incrementProductProps){
+    const amountInStock = await getProductStockAmount(productToAdd.id)
+    if (isProductInStock(productToAdd, amountInStock)){
+        incrementProductAmount({productToAdd, cart, setCart})
     }
-    return false
 }
 
-async function incrementProductAmount({productId, cart, setCart}: addProductProps) {
-    const updatedCart = await Promise.all(
-        cart.map(product => incrementAmountIfIsInStock(product, productId))
-    )
-    setCart(updatedCart)
-}
-
-async function incrementAmountIfIsInStock(product: Product, productId: number){
-    if (await isProductInStock(product, productId)){
-        product = incrementAmountOfProductWithId(product, productId)
-    }
-    return product
-}
-
-async function isProductInStock(product: Product, productId: number) {
-    const amountInStock = await getProductStockAmount(productId)
+function isProductInStock(product: Product, amountInStock: number) {
     if (product.amount < amountInStock){
         return true
     } else {
@@ -48,7 +40,12 @@ async function isProductInStock(product: Product, productId: number) {
     }
 }
 
-export function incrementAmountOfProductWithId(product: Product, productId: number) {
+function incrementProductAmount({productToAdd, cart, setCart}: incrementProductProps) {
+    const updatedCart = cart.map(product => incrementAmount(productToAdd, productToAdd.id))
+    setCart(updatedCart)
+}
+
+export function incrementAmount(product: Product, productId: number) {
     if (product.id === productId){
         product.amount += 1
     }
