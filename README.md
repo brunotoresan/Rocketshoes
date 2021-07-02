@@ -10,6 +10,7 @@
 </p>
 
 ## 🔥 About the project
+This is a shoe e-commerce project. It contains a page to list all the products, including a cart.
 
 
 ## 🌵 Fake API with JSON Server
