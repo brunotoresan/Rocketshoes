@@ -1,5 +1,5 @@
 <p align="center">
-    <img width="70%" src="https://imgur.com/a/EzQKksS" alt="Project Image"/>
+    <img width="70%" src="https://imgur.com/t0mtkR9.png" alt="Project Image"/>
 </p>
 
 <h1 align="center">RocketShoes</h1>
