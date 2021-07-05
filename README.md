@@ -19,7 +19,7 @@ We will use JSON server to simulate a REST API that will make the data in the `s
 ## 💾 Persisting Cart data with localStorage
 We will use the **localStorage API** to persist the cart data in the browser in a key:value fashion similar to JSON. To save the data we will use the **setItem** method with the **@RocketShoes:cart** key and the cart variable that must be a string: ``localStorage.setItem('@RocketShoes:cart', cart)``. In order to retrieve the data we will use the **getItem** method: ``const storagedCart = localStorage.getItem('@RocketShoes:cart');``
 
-## 🥪 Showing erros with Toastify
+## 🥪 Showing errors with Toastify
 We will use a lib called **toastify-react** to show error messages in a fast and temporary manner
 
 
